@@ -4,9 +4,7 @@ import { formatCurrency, formatToLocalDateTime } from '@/lib/utils';
 import { useParams } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { DataTable } from '../datatable/datatable';
-import { Badge } from '../ui/badge';
 import { Card, CardContent } from '../ui/card';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const expenstListColumnHelper = createColumnHelper<ExpenseItem>();
 
@@ -23,7 +21,7 @@ export const ExpenseList = ({
   const { items, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useExpenses({
       params: {
-        limit: 10,
+        limit: 20,
         order: 'DESC',
         start: startDate,
         end: endDate,
@@ -41,17 +39,6 @@ export const ExpenseList = ({
         <div className='flex items-center gap-1'>
           {expenseTypes[info.getValue() as keyof typeof expenseTypes] ||
             info?.getValue()}
-          {info?.row.original.isRecurring && (
-            <Tooltip>
-              <TooltipTrigger>
-                <Badge className='bg-slate-300 text-slate-500'>R</Badge>
-              </TooltipTrigger>
-              <TooltipContent>
-                Recuring payment ends on&nbsp;
-                {formatToLocalDateTime(info?.row.original.recurringEnd)}
-              </TooltipContent>
-            </Tooltip>
-          )}
         </div>
       ),
     }),

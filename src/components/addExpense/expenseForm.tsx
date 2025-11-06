@@ -4,7 +4,6 @@ import {
   channelTypes,
   currencyTypes,
   expenseTypes,
-  recurringCycle,
 } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +14,6 @@ import { DatePicker } from '../datepicker/datepicker';
 import { Button } from '../ui/button';
 import { Field, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 import {
   Select,
   SelectContent,
@@ -23,9 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { Separator } from '../ui/separator';
 import { SheetFooter } from '../ui/sheet';
-import { Switch } from '../ui/switch';
 import { Textarea } from '../ui/textarea';
 
 const formSchema = z
@@ -39,43 +35,16 @@ const formSchema = z
     currency: z.enum(['MYR', 'INR'], 'Currency is required'),
     channel: z.string('Channel is required'),
     category: z.string('Category is required').min(1, 'Category is required'),
-    isRecurring: z.boolean().optional(),
     notes: z.string().optional(),
-    recurringStart: z.date().optional(),
-    recurringEnd: z.date().optional(),
-    recurringCycle: z.string().optional(),
     billingMonth: z.date().optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.isRecurring) {
-      if (!data.recurringStart) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['recurringStart'],
-          message: 'Recurring start date is required',
-        });
-      }
-      if (!data.recurringEnd) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['recurringEnd'],
-          message: 'Recurring end date is required',
-        });
-      }
-      if (!data.recurringCycle) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['recurringCycle'],
-          message: 'Recurring cycle is required',
-        });
-      }
-      if (data.channel === 'creditCard' && !data.billingMonth) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['billingMonth'],
-          message: 'Billing Month is required',
-        });
-      }
+    if (data.channel === 'creditCard' && !data.billingMonth) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['billingMonth'],
+        message: 'Billing Month is required',
+      });
     }
   });
 
@@ -101,12 +70,6 @@ export const ExpenseForm = ({ handleClose }: { handleClose: () => void }) => {
           ...data,
           date: formatDate(data.date),
 
-          ...(data.isRecurring && {
-            recurringStart:
-              data.recurringStart && formatDate(data.recurringStart),
-            recurringEnd: data.recurringEnd && formatDate(data.recurringEnd),
-          }),
-
           ...(data.channel === 'creditCard' &&
             data.billingMonth && {
               billingMonth: formatDate(data.billingMonth),
@@ -128,7 +91,6 @@ export const ExpenseForm = ({ handleClose }: { handleClose: () => void }) => {
   };
 
   const isCCSpending = watch('channel') === 'creditCard';
-  const isRecurring = watch('isRecurring');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
@@ -332,99 +294,6 @@ export const ExpenseForm = ({ handleClose }: { handleClose: () => void }) => {
           )}
         />
       </div>
-      <Separator />
-      <Controller
-        name='isRecurring'
-        control={control}
-        render={({ field }) => (
-          <div className='flex items-center space-x-2'>
-            <Label htmlFor='recurring-mode'>Recurring Expense?</Label>
-            <Switch
-              id='recurring-mode'
-              checked={field.value}
-              onCheckedChange={field.onChange}
-            />
-          </div>
-        )}
-      />
-      {isRecurring && (
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <Controller
-            name='recurringStart'
-            control={control}
-            render={({ field }) => (
-              <Field>
-                <FieldLabel htmlFor='billing-date'>
-                  Recurring Start Date
-                </FieldLabel>
-                <DatePicker
-                  value={field.value}
-                  onChange={field.onChange}
-                  id='billing-date'
-                />
-                {errors.date && (
-                  <p className='text-sm text-red-600 mt-1'>
-                    {errors.recurringStart?.message}
-                  </p>
-                )}
-              </Field>
-            )}
-          />
-          <Controller
-            name='recurringEnd'
-            control={control}
-            render={({ field }) => (
-              <Field>
-                <FieldLabel htmlFor='billing-date'>
-                  Recurring End Date
-                </FieldLabel>
-                <DatePicker
-                  value={field.value}
-                  onChange={field.onChange}
-                  id='billing-date'
-                />
-                {errors.date && (
-                  <p className='text-sm text-red-600 mt-1'>
-                    {errors.recurringEnd?.message}
-                  </p>
-                )}
-              </Field>
-            )}
-          />
-          <Controller
-            name='recurringCycle'
-            control={control}
-            render={({ field }) => (
-              <Field>
-                <FieldLabel htmlFor='expense-recurring-type-select'>
-                  Category
-                </FieldLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger
-                    className='w-full'
-                    id='expense-recurring-type-select'
-                  >
-                    <SelectValue placeholder='Select Recurring Type' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {recurringCycle &&
-                      Object.entries(recurringCycle).map(([value, label]) => (
-                        <SelectItem key={value} value={value}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-                {errors.category && (
-                  <p className='text-sm text-red-600 mt-1'>
-                    {errors.recurringCycle?.message}
-                  </p>
-                )}
-              </Field>
-            )}
-          />
-        </div>
-      )}
 
       <Controller
         name='notes'

@@ -13,10 +13,6 @@ export interface ExpenseItem {
   channel: string;
   category: string;
   notes: string;
-  isRecurring?: boolean;
-  recurringCycle: string;
-  recurringStart: string;
-  recurringEnd: string;
   billingMonth: string;
 }
 

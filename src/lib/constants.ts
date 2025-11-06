@@ -45,8 +45,3 @@ export const categoryTypes = {
   maidSalary: 'Maid Salary',
   carryForward: 'Carry Forward',
 };
-
-export const recurringCycle = {
-  monthly: 'Monthly',
-  yearly: 'Yearly',
-};

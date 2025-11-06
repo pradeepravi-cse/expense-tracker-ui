@@ -14,7 +14,6 @@ export interface RegularExpense {
   notes: string;
   createdAt: string;
   updatedAt: string;
-  isRecurring: boolean;
 }
 export interface SummaryData {
   income: number;
