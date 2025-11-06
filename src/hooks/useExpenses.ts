@@ -13,7 +13,6 @@ export interface ExpenseItem {
   channel: string;
   category: string;
   notes: string;
-  billingMonth: string;
 }
 
 // Raw shape coming from API before we normalize it

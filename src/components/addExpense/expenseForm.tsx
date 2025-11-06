@@ -24,29 +24,18 @@ import {
 import { SheetFooter } from '../ui/sheet';
 import { Textarea } from '../ui/textarea';
 
-const formSchema = z
-  .object({
-    title: z.string('Title is required').min(1),
-    amount: z
-      .number('Amount is required')
-      .min(0.01, 'Amount must be greater than 0'),
-    date: z.date('Date is required'),
-    type: z.string('Type is required').min(1, 'Type is required'),
-    currency: z.enum(['MYR', 'INR'], 'Currency is required'),
-    channel: z.string('Channel is required'),
-    category: z.string('Category is required').min(1, 'Category is required'),
-    notes: z.string().optional(),
-    billingMonth: z.date().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.channel === 'creditCard' && !data.billingMonth) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['billingMonth'],
-        message: 'Billing Month is required',
-      });
-    }
-  });
+const formSchema = z.object({
+  title: z.string('Title is required').min(1),
+  amount: z
+    .number('Amount is required')
+    .min(0.01, 'Amount must be greater than 0'),
+  date: z.date('Date is required'),
+  type: z.string('Type is required').min(1, 'Type is required'),
+  currency: z.enum(['MYR', 'INR'], 'Currency is required'),
+  channel: z.string('Channel is required'),
+  category: z.string('Category is required').min(1, 'Category is required'),
+  notes: z.string().optional(),
+});
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -55,7 +44,6 @@ export const ExpenseForm = ({ handleClose }: { handleClose: () => void }) => {
     handleSubmit,
     control,
     formState: { errors },
-    watch,
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     mode: 'onSubmit',
@@ -69,11 +57,6 @@ export const ExpenseForm = ({ handleClose }: { handleClose: () => void }) => {
         .post('/regular-expenses', {
           ...data,
           date: formatDate(data.date),
-
-          ...(data.channel === 'creditCard' &&
-            data.billingMonth && {
-              billingMonth: formatDate(data.billingMonth),
-            }),
         })
         .then((res) => {
           if (res) {
@@ -89,8 +72,6 @@ export const ExpenseForm = ({ handleClose }: { handleClose: () => void }) => {
       handleClose();
     }
   };
-
-  const isCCSpending = watch('channel') === 'creditCard';
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
@@ -243,27 +224,6 @@ export const ExpenseForm = ({ handleClose }: { handleClose: () => void }) => {
           )}
         />
 
-        {isCCSpending && (
-          <Controller
-            name='billingMonth'
-            control={control}
-            render={({ field }) => (
-              <Field>
-                <FieldLabel htmlFor='billing-date'>Billing Date</FieldLabel>
-                <DatePicker
-                  value={field.value}
-                  onChange={field.onChange}
-                  id='billing-date'
-                />
-                {errors.date && (
-                  <p className='text-sm text-red-600 mt-1'>
-                    {errors.billingMonth?.message}
-                  </p>
-                )}
-              </Field>
-            )}
-          />
-        )}
         <Controller
           name='category'
           control={control}
