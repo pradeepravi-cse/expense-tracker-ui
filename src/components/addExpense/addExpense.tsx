@@ -21,7 +21,7 @@ export const AddExpense = () => {
       <Button onClick={() => setOpen(true)}>
         <Plus /> Add
       </Button>
-      <SheetContent className='sm:max-w-full md:w-[600px] md:max-w-[600px] overflow-auto'>
+      <SheetContent className='w-full sm:max-w-full md:w-[600px] md:max-w-[600px] overflow-auto'>
         <SheetHeader>
           <SheetTitle>Add New Expense</SheetTitle>
           <SheetDescription>

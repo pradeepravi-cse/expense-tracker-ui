@@ -14,12 +14,12 @@ const RootComponent = () => {
             <Link
               to='/$lang/dashboard'
               params={{ lang: 'my' }}
-              className='text-sm md:text-md font-medium text-slate-600 hover:text-white hover:bg-slate-900 px-4 py-2 transition-all ease-in duration-100'
+              className='text-sm md:text-md font-medium text-slate-600 hover:text-white hover:bg-slate-900 px-4 py-2 transition-all ease-in duration-100 flex items-center gap-1'
               activeProps={{
                 className: 'bg-slate-900 !text-white',
               }}
             >
-              🇲🇾 Malaysia
+              🇲🇾<span className='hidden md:inline-block'>Malaysia</span>
             </Link>
             <Link
               to='/$lang/dashboard'
@@ -29,7 +29,7 @@ const RootComponent = () => {
                 className: 'bg-slate-900 !text-white',
               }}
             >
-              🇮🇳 India
+              🇮🇳<span className='hidden md:inline-block'>India</span>
             </Link>
           </div>
           <AddExpense />
