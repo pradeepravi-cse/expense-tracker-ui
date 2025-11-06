@@ -32,6 +32,7 @@ export const ExpenseList = ({
     expenstListColumnHelper.accessor('title', {
       header: 'Title',
       cell: (info) => info?.getValue(),
+      enableSorting: false,
     }),
     expenstListColumnHelper.accessor('type', {
       header: 'Type',
@@ -41,19 +42,33 @@ export const ExpenseList = ({
             info?.getValue()}
         </div>
       ),
+      enableSorting: false,
     }),
     expenstListColumnHelper.accessor('date', {
       header: 'Date',
       cell: (info) => formatToLocalDateTime(info?.getValue()),
+      enableSorting: false,
     }),
 
     expenstListColumnHelper.accessor('amount', {
       header: 'Amount',
-      cell: (info) =>
-        formatCurrency(
-          Number(info.getValue()),
-          info?.row.original?.currency as 'MYR' | 'INR'
-        ),
+      cell: (info) => (
+        <p
+          className={`${
+            info?.row.original.type === 'expense'
+              ? 'text-destructive'
+              : 'text-green-600'
+          }`}
+        >
+          {info?.row.original.type !== 'expense' ? '+' : '-'}
+          {formatCurrency(
+            Number(info.getValue()),
+            info?.row.original?.currency as 'MYR' | 'INR'
+          )}
+        </p>
+      ),
+
+      enableSorting: false,
     }),
 
     expenstListColumnHelper.accessor('channel', {
@@ -61,12 +76,14 @@ export const ExpenseList = ({
       cell: (info) =>
         channelTypes[info?.getValue() as keyof typeof channelTypes] ||
         info.getValue(),
+      enableSorting: false,
     }),
     expenstListColumnHelper.accessor('category', {
       header: 'Category',
       cell: (info) =>
         categoryTypes[info?.getValue() as keyof typeof categoryTypes] ||
         info.getValue(),
+      enableSorting: false,
     }),
   ];
 
