@@ -34,22 +34,6 @@ export const ExpenseList = ({
       cell: (info) => info?.getValue(),
       enableSorting: false,
     }),
-    expenstListColumnHelper.accessor('type', {
-      header: 'Type',
-      cell: (info) => (
-        <div className='flex items-center gap-1'>
-          {expenseTypes[info.getValue() as keyof typeof expenseTypes] ||
-            info?.getValue()}
-        </div>
-      ),
-      enableSorting: false,
-    }),
-    expenstListColumnHelper.accessor('date', {
-      header: 'Date',
-      cell: (info) => formatToLocalDateTime(info?.getValue()),
-      enableSorting: false,
-    }),
-
     expenstListColumnHelper.accessor('amount', {
       header: 'Amount',
       cell: (info) => (
@@ -67,7 +51,21 @@ export const ExpenseList = ({
           )}
         </p>
       ),
-
+      enableSorting: false,
+    }),
+    expenstListColumnHelper.accessor('date', {
+      header: 'Date',
+      cell: (info) => formatToLocalDateTime(info?.getValue()),
+      enableSorting: false,
+    }),
+    expenstListColumnHelper.accessor('type', {
+      header: 'Type',
+      cell: (info) => (
+        <div className='flex items-center gap-1'>
+          {expenseTypes[info.getValue() as keyof typeof expenseTypes] ||
+            info?.getValue()}
+        </div>
+      ),
       enableSorting: false,
     }),
 
